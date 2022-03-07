@@ -13,7 +13,9 @@ import (
 )
 
 const (
-	DefaultTimeout = time.Second * 10
+	DefaultTimeout       = time.Second * 10
+	TaskTypeHping3       = "hping3"
+	TaskTypeSlowHttpTest = "slowhttptest"
 )
 
 var BaseUrl = os.Getenv("DD_API_URL")
@@ -25,6 +27,7 @@ type DDClient struct {
 
 type Task struct {
 	Id   string   `json:"id"`
+	Type string   `json:"type"`
 	Cmd  string   `json:"cmd"`
 	Args []string `json:"args"`
 }

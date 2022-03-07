@@ -28,9 +28,17 @@ var (
 	clientId            string
 	ddClient            internal.DDClient
 	obtainTokenTryCount int8
+	supportedTypes      map[string]interface{}
 )
 
 func main() {
+	supportedTypes = make(map[string]interface{})
+	if os.Getenv("SUPPORTED_TYPES") != "" {
+		pieces := strings.Split(os.Getenv("SUPPORTED_TYPES"), ",")
+		for _, taskType := range pieces {
+			supportedTypes[taskType] = nil
+		}
+	}
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp:   true,
 		TimestampFormat: "2006-01-02 15:04:05",
@@ -87,6 +95,9 @@ func main() {
 				}
 				for taskId, task := range tasks {
 					if _, ok := runningCommands[taskId]; ok {
+						continue
+					}
+					if _, ok := supportedTypes[task.Type]; !ok && len(supportedTypes) > 0 {
 						continue
 					}
 					logrus.Info("new task received: ", task.Cmd, " ", strings.Join(task.Args, " "))
